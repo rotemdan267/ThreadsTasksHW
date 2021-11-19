@@ -36,12 +36,13 @@ namespace ThreadsTasksHW
             }
             List<Thread> threads = new List<Thread>();
             List<long> midSums = new List<long>();
-            Task[] tasks = new Task[numOfThreads];
+            //Task[] tasks = new Task[numOfThreads];
             int[] tempEnd = new int[numOfThreads];
             tempEnd[0] = endNumber;
             int[] tempStart = new int[numOfThreads];
             tempStart[0] = endNumber;
             Thread thread;
+            Func<int, int, long> sumDel = SumNumbersThread;
             for (int i = 0; i < numOfThreads; i++)
             {
                 if (i != 0)
@@ -50,7 +51,6 @@ namespace ThreadsTasksHW
                 }
                 tempStart[i] = tempEnd[i] - numForThread;
                 if (tempStart[i] < 0) tempStart[i] = 0;
-                Func<int, int, long> sumDel = SumNumbersThread;
                 thread = new Thread(() =>
                 {
                     count++;
@@ -60,18 +60,7 @@ namespace ThreadsTasksHW
                 thread.Name = "thread " + i;
                 threads.Add(thread);
                 threads[i].Start();
-                //tasks[i] = new Task(() =>
-                //{
-                //    long midSum = sumDel(tempStart[midSums.Count], tempEnd[midSums.Count]);
-                //    midSums.Add(midSum);
-                //});
-                //tasks[i].Start();
-                //thread.Start();
-                //Console.WriteLine(thread.ThreadState);
-                //thread.Join();
-                //Console.WriteLine(thread.ThreadState);
-                //threads.Add(thread);
-                //Console.WriteLine($"{threads[i].Name} {threads[i].ThreadState}");
+
             }
 
             for (int i = 0; i < numOfThreads; i++)
@@ -89,5 +78,17 @@ namespace ThreadsTasksHW
             }
             return sum;
         }
+        //tasks[i] = new Task(() =>
+        //{
+        //    long midSum = sumDel(tempStart[midSums.Count], tempEnd[midSums.Count]);
+        //    midSums.Add(midSum);
+        //});
+        //tasks[i].Start();
+        //thread.Start();
+        //Console.WriteLine(thread.ThreadState);
+        //thread.Join();
+        //Console.WriteLine(thread.ThreadState);
+        //threads.Add(thread);
+        //Console.WriteLine($"{threads[i].Name} {threads[i].ThreadState}");
     }
 }
