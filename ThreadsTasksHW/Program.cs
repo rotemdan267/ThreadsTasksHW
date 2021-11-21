@@ -165,31 +165,11 @@ Thread Q3Thread4 = new Thread(() =>
 
 #region Q4
 
-//Console.WriteLine("Enter number:");
-//int n = int.Parse(Console.ReadLine());
-//long sum = Summary.SumNumbersThread(1, n + 1);
-//long sumWithThreads = Summary.SumNumbers(n);
-//Console.WriteLine("sum =              " + sum);
-//Console.WriteLine("sum with threads = " + sumWithThreads);
-
-#endregion
-
-#region Q5
-
-DirectoryInfo directory = new DirectoryInfo(@"C:\Users\User\Desktop\‏‏תיקיה חדשה\‏‏תיקיה חדשה");
-var dir = directory.GetDirectories();
-
-string str = "abcdefgh";
-string str2 = "bcd";
-Console.WriteLine(str.IndexOf(str2));
-Console.WriteLine();
-string s = str.Substring(str.IndexOf(str2) + str2.Length);
-Console.WriteLine(s);
-
-if (dir.Length == 0)
-{
-    Console.WriteLine(true);
-}
-Console.WriteLine(dir.Length);
+Console.WriteLine("Enter number:");
+int n = int.Parse(Console.ReadLine());
+long sum = Summary.SumNumbersThread(1, n + 1);
+long sumWithThreads = Summary.SumNumbers(n);
+Console.WriteLine("sum =              " + sum);
+Console.WriteLine("sum with threads = " + sumWithThreads);
 
 #endregion
