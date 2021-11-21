@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Diagnostics;
 using ThreadsTasksHW;
 
 
@@ -14,6 +15,15 @@ using ThreadsTasksHW;
 //});
 
 //thread.Start();
+Task task = new Task( () =>
+{
+    for (int i = 1000; i <= 5000; i++)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(i);
+    }
+});
+
 Action action = () =>
 {
     for (int i = 1000; i <= 5000; i++)
@@ -22,9 +32,8 @@ Action action = () =>
         Console.WriteLine(i);
     }
 };
-//task.Start();
 //await Task.Run(action);
-//Task.WaitAll(task);
+
 
 //Task.Run(() =>
 //{
@@ -77,7 +86,7 @@ Thread directoryThread2 = new Thread(() =>
 Thread Q3Thread1 = new Thread(() =>
 {
     NumNum numNum1 = new NumNum("Q3Thread1");
-    for (int i = 0; i < 5000; i++)
+    for (int i = 0; i < 500; i++)
     {
         if (i == 100)
         {
@@ -136,6 +145,7 @@ Thread Q3Thread4 = new Thread(() =>
 //Q3Thread3.Start();
 //Q3Thread4.Start();
 
+
 //Task Q3Thread5 = new Task(() =>
 //{
 //    NumNum numNum1 = new NumNum("Q3Thread4");
@@ -155,17 +165,31 @@ Thread Q3Thread4 = new Thread(() =>
 
 #region Q4
 
-Console.WriteLine("Enter number:");
-int n = int.Parse(Console.ReadLine());
-long sum = Summary.SumNumbersThread(1, n + 1);
-long sumWithThreads = Summary.SumNumbers(n);
-Console.WriteLine("sum =              " + sum);
-Console.WriteLine("sum with threads = " + sumWithThreads);
+//Console.WriteLine("Enter number:");
+//int n = int.Parse(Console.ReadLine());
+//long sum = Summary.SumNumbersThread(1, n + 1);
+//long sumWithThreads = Summary.SumNumbers(n);
+//Console.WriteLine("sum =              " + sum);
+//Console.WriteLine("sum with threads = " + sumWithThreads);
 
 #endregion
 
 #region Q5
 
+DirectoryInfo directory = new DirectoryInfo(@"C:\Users\User\Desktop\‏‏תיקיה חדשה\‏‏תיקיה חדשה");
+var dir = directory.GetDirectories();
 
+string str = "abcdefgh";
+string str2 = "bcd";
+Console.WriteLine(str.IndexOf(str2));
+Console.WriteLine();
+string s = str.Substring(str.IndexOf(str2) + str2.Length);
+Console.WriteLine(s);
+
+if (dir.Length == 0)
+{
+    Console.WriteLine(true);
+}
+Console.WriteLine(dir.Length);
 
 #endregion
