@@ -61,12 +61,12 @@ namespace ThreadsTasksHW
                   // במערך, לכן היה צריך למצוא דרך לגרום שכל פעם שתהליך
                   // יפעל, הבא אחריו יעבוד עם האיבר הבא במערך, לכן
                   // count
-                    long midSum = sumDel(tempStart[count++], tempEnd[count]);
+                    long midSum = sumDel(tempStart[++count], tempEnd[count]);
                     midSums.Add(midSum);
                 });
                 thread.Name = "thread " + i;
                 threads.Add(thread);
-                threads[i].Start();
+                //threads[i].Start();
                 //tasks[i] = new Task(() =>
                 //{
                 //    long midSum = sumDel(tempStart[midSums.Count], tempEnd[midSums.Count]);
@@ -84,7 +84,7 @@ namespace ThreadsTasksHW
 
             for (int i = 0; i < numOfThreads; i++)
             {
-                //threads[i].Start();
+                threads[i].Start();
                 //Console.WriteLine($"{threads[i].Name} {threads[i].ThreadState}");
                 threads[i].Join();
                 //Console.WriteLine($"{threads[i].Name} {threads[i].ThreadState}");
