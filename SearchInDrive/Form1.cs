@@ -27,20 +27,25 @@ namespace SearchInDrive
         {
             Search search = new Search(@"C:\Users\User\Desktop\‏‏תיקיה חדשה (3)", txtSearchTerm.Text);
             var watch = Stopwatch.StartNew();
-            search.StartSearchAsync();
-            //Task.WaitAll(search.Tasks);
+            search.StartSearch();
+            //search.StartSearchAsync();
+            //Task.WaitAll(search.Tasks.ToArray());
             watch.Stop();
-            MessageBox.Show($"\"{search.SearchTerm}\" appears {search.appearancesCounter} times in {search.Files.Count} files on drive C\nThe search took {watch.Elapsed.Minutes} minutes and {watch.Elapsed.Seconds} seconds");
+            MessageBox.Show($"\"{search.SearchTerm}\" appears {search.appearancesCounter} times in" +
+                $" {search.Files.Count} files on drive C" +
+                $"\nThe search took {watch.Elapsed.Minutes} minutes and {watch.Elapsed.Seconds} seconds");
         }
 
         private void btnSearchInD_Click(object sender, EventArgs e)
         {
-            Search search = new Search(@"D:\", txtSearchTerm.Text);
+            Search search = new Search(@"C:\Users\User\Desktop\‏‏תיקיה חדשה (3)", txtSearchTerm.Text);
             var watch = Stopwatch.StartNew();
-            search.StartSearch();
+            search.StartSearchWithTasks();
             Task.WaitAll(search.Tasks.ToArray());
             watch.Stop();
-            MessageBox.Show($"\"{search.SearchTerm}\" appears {search.appearancesCounter} times in {search.Files.Count} files on drive D\nThe search took {watch.Elapsed.Minutes} minutes and {watch.Elapsed.Seconds} seconds");
+            MessageBox.Show($"\"{search.SearchTerm}\" appears {search.appearancesCounter} times in" +
+                $" {search.Files.Count} files on drive D" +
+                $"\nThe search took {watch.Elapsed.Minutes} minutes and {watch.Elapsed.Seconds} seconds");
 
         }
     }

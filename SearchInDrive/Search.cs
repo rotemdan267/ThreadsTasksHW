@@ -14,7 +14,8 @@ namespace SearchInDrive
         public int appearancesCounter;
         public List<FileInfo> Files { get; set; }
         public List<FileInfo> FilesToRead { get; set; }
-        public Task[] Tasks { get; set; }
+        public List<Task> Tasks { get; set; }
+
         public int index, index2;
         static object lockObject1 = new object();
         static object lockObject2 = new object();
@@ -30,7 +31,7 @@ namespace SearchInDrive
             appearancesCounter = 0;
             Files = new List<FileInfo>();
             FilesToRead = new List<FileInfo>();
-            Tasks = new Task[16];
+            Tasks = new List<Task>();
             index = -1;
             index2 = -1;
         }
@@ -62,35 +63,34 @@ namespace SearchInDrive
                 appearancesCounter++;
             }
         }
-        //public void AddAndRunTask(Task task)
-        //{
-        //    lock (lockObject3)
-        //    {
-        //        Tasks.Add(task);
-        //        Tasks[Tasks.Count - 1].Start();
-        //    }
-        //}
+        public void AddAndRunTask(Task task)
+        {
+            lock (lockObject3)
+            {
+                Tasks.Add(task);
+                Tasks[Tasks.Count - 1].Start();
+            }
+        }
         public void AddTask(Task task)
         {
             lock (lockObject4)
             {
-                index++;
-                Tasks[index] = task;
+                Tasks.Add(task);
             }
         }
         public void AddExtension(string extension)
         {
             Extensions.Add(extension);
         }
-        public void StartSearch()
+        public void StartSearchWithTasks()
         {
             DirectoryInfo drive = new DirectoryInfo(Drive);
             var directories = drive.GetDirectories();
             var files = drive.GetFiles();
-            SearchInDirectory(files);
-            SearchInDirectories(directories);
+            SearchInDirectoryWithTasks(files);
+            SearchInDirectoriesWithTasks(directories);
         }
-        public void SearchInDirectories(DirectoryInfo[] directories)
+        public void SearchInDirectoriesWithTasks(DirectoryInfo[] directories)
         {
             Task tast = new Task(() =>
             {
@@ -99,7 +99,7 @@ namespace SearchInDrive
                     try
                     {
                         var files = item.GetFiles();
-                        SearchInDirectory(files);
+                        SearchInDirectoryWithTasks(files);
                     }
                     catch (Exception uae)
                     {
@@ -108,7 +108,7 @@ namespace SearchInDrive
                     try
                     {
                         var newDirectories = item.GetDirectories();
-                        SearchInDirectories(newDirectories);
+                        SearchInDirectoriesWithTasks(newDirectories);
                     }
                     catch (Exception uae)
                     {
@@ -116,9 +116,9 @@ namespace SearchInDrive
                     }
                 }
             });
-            //AddAndRunTask(tast);
+            AddAndRunTask(tast);
         }
-        public void SearchInDirectory(FileInfo[] files)
+        public void SearchInDirectoryWithTasks(FileInfo[] files)
         {
             Task task;
             string str;
@@ -154,60 +154,52 @@ namespace SearchInDrive
 
                             }
                         });
-                        //AddAndRunTask(task);
+                        AddAndRunTask(task);
                     }
                 }
             }
         }
 
 
-        public void StartSearchAsync()
+        public async void StartSearchAsync()
         {
             DirectoryInfo drive = new DirectoryInfo(Drive);
             var directories = drive.GetDirectories();
             var files = drive.GetFiles();
-            //await Task.Run(() =>
-            //{
-            SearchInDirectoriesAsync(directories);
-            //});
+            await SearchInDirectoriesAsync(directories);
             SearchInDirectoryAsync(files);
-            //Task task = 
-            //AddTask(task);
-            //Task.WaitAll(task, task1);
         }
-        public void SearchInDirectoriesAsync(DirectoryInfo[] directories)
+        public async Task SearchInDirectoriesAsync(DirectoryInfo[] directories)
         {
-            //await Task.Run(() =>
-            //{
-            foreach (var item in directories)
+            await Task.Run(() =>
             {
-
-                try
-                {
-                    var files = item.GetFiles();
-                    SearchInDirectoryAsync(files);
-                }
-                catch (UnauthorizedAccessException uae)
+                foreach (var item in directories)
                 {
 
-                }
-                try
-                {
-                    var newDirectories = item.GetDirectories();
-                    //Task task = 
-                    SearchInDirectoriesAsync(newDirectories);
-                    //AddTask(task);
-                    //Task.WaitAll(task);
+                    try
+                    {
+                        var files = item.GetFiles();
+                        SearchInDirectoryAsync(files);
+                    }
+                    catch (UnauthorizedAccessException uae)
+                    {
+
+                    }
+                    try
+                    {
+                        var newDirectories = item.GetDirectories();
+                        Task task = SearchInDirectoriesAsync(newDirectories);
+                        AddTask(task);
+
+                    }
+                    catch (UnauthorizedAccessException uae)
+                    {
+
+                    }
+
 
                 }
-                catch (UnauthorizedAccessException uae)
-                {
-
-                }
-
-
-            }
-            //});
+            });
         }
         public void SearchInDirectoryAsync(FileInfo[] files)
         {
@@ -218,44 +210,124 @@ namespace SearchInDrive
                     if (file.Extension == extension)
                     {
                         FilesToRead.Add(file);
-                        //Task task = 
-                            ReadFileAsync();
-                        //task.Wait();
+                        Task task = ReadFileAsync();
+                        AddTask(task);
                     }
                 }
             }
         }
-        public void ReadFileAsync()
+        public async Task ReadFileAsync()
         {
-            //try
-            //{
-            //await Task.Run(() =>
-            //{
-                int fileIndex = GetIndex();
-                StreamReader streamReader = new StreamReader(FilesToRead[fileIndex].FullName);
-                string str = streamReader.ReadToEnd();
-                if (str.Contains(SearchTerm))
+            try
+            {
+                await Task.Run(() =>
                 {
-                    AppearanceFound();
-                    AddFile(FilesToRead[fileIndex]);
-
-                    while (str != string.Empty)
+                    int fileIndex = GetIndex();
+                    StreamReader streamReader = new StreamReader(FilesToRead[fileIndex].FullName);
+                    string str = streamReader.ReadToEnd();
+                    if (str.Contains(SearchTerm))
                     {
-                        str = str.Substring(str.IndexOf(SearchTerm) + SearchTerm.Length);
-                        if (str.Contains(SearchTerm))
+                        AppearanceFound();
+                        AddFile(FilesToRead[fileIndex]);
+
+                        while (str != string.Empty)
                         {
-                            AppearanceFound();
+                            str = str.Substring(str.IndexOf(SearchTerm) + SearchTerm.Length);
+                            if (str.Contains(SearchTerm))
+                            {
+                                AppearanceFound();
+                            }
+                            else str = string.Empty;
                         }
-                        else str = string.Empty;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+
+
+        public void StartSearch()
+        {
+            DirectoryInfo drive = new DirectoryInfo(Drive);
+            var directories = drive.GetDirectories();
+            var files = drive.GetFiles();
+            SearchInDirectory(files);
+            SearchInDirectories(directories);
+        }
+        public void SearchInDirectories(DirectoryInfo[] directories)
+        {
+            //Task tast = new Task(() =>
+            //{
+                foreach (var item in directories)
+                {
+                    try
+                    {
+                        var files = item.GetFiles();
+                        SearchInDirectory(files);
+                    }
+                    catch (Exception uae)
+                    {
+
+                    }
+                    try
+                    {
+                        var newDirectories = item.GetDirectories();
+                        SearchInDirectories(newDirectories);
+                    }
+                    catch (Exception uae)
+                    {
+
                     }
                 }
             //});
-            //}
-            //catch (UnauthorizedAccessException ex)
-            //{
-
-            //}
+            //AddAndRunTask(tast);
         }
+        public void SearchInDirectory(FileInfo[] files)
+        {
+            Task task;
+            string str;
+            foreach (var file in files)
+            {
+                foreach (var extension in Extensions)
+                {
+                    if (file.Extension == extension)
+                    {
+                        //task = new Task(() =>
+                        //{
+                            try
+                            {
+                                str = File.ReadAllText(file.FullName);
+                                if (str.Contains(SearchTerm))
+                                {
+                                    AppearanceFound();
+                                    AddFile(file);
+
+                                    while (str != string.Empty)
+                                    {
+                                        str = str.Substring(str.IndexOf(SearchTerm) + SearchTerm.Length);
+                                        if (str.Contains(SearchTerm))
+                                        {
+                                            AppearanceFound();
+                                        }
+                                        else str = string.Empty;
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                        //});
+                        //AddAndRunTask(task);
+                    }
+                }
+            }
+        }
+
     }
 }
 
