@@ -25,10 +25,10 @@ namespace SearchInDrive
 
         private void btnSearchInC_Click(object sender, EventArgs e)
         {
-            Search search = new Search(@"C:\", txtSearchTerm.Text);
+            Search search = new Search(@"C:\Users\User\Desktop\‏‏תיקיה חדשה (3)", txtSearchTerm.Text);
             var watch = Stopwatch.StartNew();
-            search.StartSearch();
-            //Task.WaitAll(search.Tasks.ToArray());
+            search.StartSearchAsync();
+            //Task.WaitAll(search.Tasks);
             watch.Stop();
             MessageBox.Show($"\"{search.SearchTerm}\" appears {search.appearancesCounter} times in {search.Files.Count} files on drive C\nThe search took {watch.Elapsed.Minutes} minutes and {watch.Elapsed.Seconds} seconds");
         }

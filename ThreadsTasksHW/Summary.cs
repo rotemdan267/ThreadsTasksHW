@@ -22,7 +22,7 @@ namespace ThreadsTasksHW
         }
         public static void AddToList(long midSum)
         {
-            lock(lockObject)
+            lock (lockObject)
             {
                 MidSums.Add(midSum);
             }
@@ -32,8 +32,8 @@ namespace ThreadsTasksHW
             lock (lockObject2)
             {
                 count++;
+                return count;
             }
-            return count;
         }
 
         public static long SumNumbers(int startNumber, int endNumber)
@@ -80,7 +80,7 @@ namespace ThreadsTasksHW
                 tempStart[i] = tempEnd[i] - numForThread; // חישוב מס' התחלתי לכל תהליך
                 if (tempStart[i] < 0) tempStart[i] = 0;
                 thread = new Thread(() =>
-                { 
+                {
                     int currentIndex = AddToCount();
                     long midSum = SumNumbers(tempStart[currentIndex], tempEnd[currentIndex]);
                     AddToList(midSum);
@@ -115,7 +115,7 @@ namespace ThreadsTasksHW
             long sum = endNumber;
             int numForThread = 200000; // כמות המספרים שתהליך יעבוד עליהם
             int numOfThreads = endNumber / 200000;
-            
+
             if (endNumber % 200000 > 0)
             {
                 numOfThreads++; // תהליך נוסף שיחבר את המספרים הנותרים
@@ -126,7 +126,7 @@ namespace ThreadsTasksHW
                 numForThread = endNumber / 5;
                 sum += SumNumbers(1, endNumber % 5);
             }
-          
+
             Task[] tasks = new Task[numOfThreads];
             int[] tempEnd = new int[numOfThreads]; // רשימה של מס' סופי שיישלח לתהליך
                                                    // (כששלחתי משתנה לתהליך, הוא הספיק להשתנות לפני שהתהליך החל לפעול,
@@ -145,7 +145,7 @@ namespace ThreadsTasksHW
                 tempStart[i] = tempEnd[i] - numForThread; // חישוב מס' התחלתי לכל תהליך
                 if (tempStart[i] < 0) tempStart[i] = 0;
                 task = new Task(() =>
-                { 
+                {
                     int currentIndex = AddToCount();
                     long midSum = SumNumbers(tempStart[currentIndex], tempEnd[currentIndex]);
                     AddToList(midSum);
