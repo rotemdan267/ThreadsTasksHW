@@ -5,58 +5,68 @@ using ThreadsTasksHW;
 
 #region Q1
 
-//Thread thread = new Thread(() =>
-//{
-//    for (int i = 1; i <= 500; i++)
-//    {
-//        Console.ForegroundColor = ConsoleColor.Yellow;
-//        Console.WriteLine(i);
-//    }
-//});
+#region Thread
 
-//thread.Start();
-Task task = new Task( () =>
+Thread thread = new Thread(() =>
 {
-    for (int i = 1000; i <= 5000; i++)
+    for (int i = 1; i <= 5000; i++)
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine(i);
+    }
+});
+//thread.Start();
+
+
+
+#endregion
+
+
+#region Task
+
+
+Task task = new Task(() =>
+{
+    for (int i = 1; i <= 5000; i++)
     {
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(i);
     }
 });
+//task.Start();
+//task.Wait();
 
-Action action = () =>
+
+#endregion
+
+
+#region async - await
+
+//Task task1 = Q1Async();
+//task1.Wait();
+
+static async Task Q1Async()
 {
-    for (int i = 1000; i <= 5000; i++)
+    await Task.Run(() =>
     {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(i);
-    }
-};
-//await Task.Run(action);
+        for (int i = 1; i <= 5000; i++)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(i);
+        }
+    });
+}
 
-
-//Task.Run(() =>
-//{
-//    for (int i = 10000; i <= 50000; i++)
-//    {
-//        Console.ForegroundColor = ConsoleColor.Green;
-//        Console.WriteLine(i);
-//    }
-//});
-
-//for (int i = 0; i < 500; i++)
-//{
-//    Console.ForegroundColor = ConsoleColor.Yellow;
-//    Console.WriteLine(i);
-//}
+#endregion
 
 #endregion
 
 #region Q2
 
-
 DirectoryInfo directory1 = new DirectoryInfo(@"C:\Users\User\Music\music\Songs");
 DirectoryInfo directory2 = new DirectoryInfo(@"C:\Users\User\Wallpapers");
+
+#region Thread
 
 Thread directoryThread1 = new Thread(() =>
 {
@@ -81,7 +91,60 @@ Thread directoryThread2 = new Thread(() =>
 
 #endregion
 
+#region Task
+
+
+Task task2 = new Task(() =>
+{
+    var files = directory1.GetFiles();
+    foreach (var file in files)
+    {
+        Console.WriteLine(file.Name);
+    }
+});
+
+Task task22 = new Task(() =>
+{
+    var files = directory2.GetFiles();
+    foreach (var file in files)
+    {
+        Console.WriteLine(file.Name);
+    }
+});
+
+//task2.Start();
+//task22.Start();
+//Task.WaitAll(task2, task22);
+
+#endregion
+
+#region    async - await
+
+//task2 = ReadDirectory(directory1);
+//task22 = ReadDirectory(directory2);
+//Task.WaitAll(task2, task22);
+
+static async Task ReadDirectory(DirectoryInfo directory)
+{
+    await Task.Run(() =>
+    {
+        var files = directory.GetFiles();
+        foreach (var file in files)
+        {
+            Console.WriteLine(file.Name);
+        }
+    });
+}
+
+
+#endregion
+
+#endregion
+
 #region Q3
+
+
+#region Thread
 
 Thread Q3Thread1 = new Thread(() =>
 {
@@ -139,37 +202,190 @@ Thread Q3Thread4 = new Thread(() =>
         Console.WriteLine(i);
     }
 });
+//Console.WriteLine("staring threads");
 
 //Q3Thread1.Start();
 //Q3Thread2.Start();
 //Q3Thread3.Start();
 //Q3Thread4.Start();
 
+//Console.WriteLine("threads started");
 
-//Task Q3Thread5 = new Task(() =>
-//{
-//    NumNum numNum1 = new NumNum("Q3Thread4");
-//    for (int i = 0; i < 500; i++)
-//    {
-//        if (i == 4)
-//        {
-//            numNum1.Sleep();
-//        }
-//        Console.ForegroundColor = ConsoleColor.Blue;
-//        Console.WriteLine(i);
-//    }
-//});
-//Q3Thread5.Start();
+#endregion
+
+#region Task
+
+Task Q3Task1 = new Task(() =>
+{
+    NumNumTask NumNumTask1 = new NumNumTask("Q3Task1");
+    for (int i = 0; i < 500; i++)
+    {
+        if (i == 100)
+        {
+            NumNumTask1.Sleep();
+        }
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(i);
+    }
+});
+
+Task Q3Task2 = new Task(() =>
+{
+    NumNumTask NumNumTask1 = new NumNumTask("Q3Task2");
+    for (int i = 0; i < 500; i++)
+    {
+        if (i == 200)
+        {
+            NumNumTask1.Sleep();
+        }
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine(i);
+    }
+});
+
+
+Task Q3Task3 = new Task(() =>
+{
+    NumNumTask NumNumTask1 = new NumNumTask("Q3Task3");
+    for (int i = 0; i < 500; i++)
+    {
+        if (i == 300)
+        {
+            NumNumTask1.Sleep();
+        }
+        Console.ForegroundColor = ConsoleColor.DarkYellow;
+        Console.WriteLine(i);
+    }
+});
+
+Task Q3Task4 = new Task(() =>
+{
+    NumNumTask NumNumTask1 = new NumNumTask("Q3Task4");
+    for (int i = 0; i < 500; i++)
+    {
+        if (i == 400)
+        {
+
+            NumNumTask1.Sleep();
+        }
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine(i);
+    }
+});
+
+//Console.WriteLine("staring Tasks");
+
+//Q3Task1.Start();
+//Q3Task2.Start();
+//Q3Task3.Start();
+//Q3Task4.Start();
+
+//Console.WriteLine("Tasks started");
+
+//Task.WaitAll(Q3Task1, Q3Task2, Q3Task3, Q3Task4);
+
+#endregion
+
+#region    async - await
+
+
+Q3Task1 = new Task(() =>
+{
+    NumNumAsync NumNumAsync1 = new NumNumAsync("Q3Task1");
+    for (int i = 0; i < 500; i++)
+    {
+        if (i == 100)
+        {
+            var task = NumNumAsync1.SleepAsync();
+            task.Wait();
+        }
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(i);
+    }
+});
+
+Q3Task2 = new Task(() =>
+{
+    NumNumAsync NumNumAsync1 = new NumNumAsync("Q3Task2");
+    for (int i = 0; i < 500; i++)
+    {
+        if (i == 200)
+        {
+            var task = NumNumAsync1.SleepAsync();
+            task.Wait();
+        }
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine(i);
+    }
+});
+
+
+Q3Task3 = new Task(() =>
+{
+    NumNumAsync NumNumAsync1 = new NumNumAsync("Q3Task3");
+    for (int i = 0; i < 500; i++)
+    {
+        if (i == 300)
+        {
+            var task = NumNumAsync1.SleepAsync();
+            task.Wait();
+        }
+        Console.ForegroundColor = ConsoleColor.DarkYellow;
+        Console.WriteLine(i);
+    }
+});
+
+Q3Task4 = new Task(() =>
+{
+    NumNumAsync NumNumAsync1 = new NumNumAsync("Q3Task4");
+    for (int i = 0; i < 500; i++)
+    {
+        if (i == 400)
+        {
+
+            var task = NumNumAsync1.SleepAsync();
+            task.Wait();
+        }
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine(i);
+    }
+});
+
+//Console.WriteLine("staring Tasks");
+
+//Q3Task1.Start();
+//Q3Task2.Start();
+//Q3Task3.Start();
+//Q3Task4.Start();
+
+//Console.WriteLine("Tasks started");
+
+//Task.WaitAll(Q3Task1, Q3Task2, Q3Task3, Q3Task4);
+
+
+#endregion
+
 
 #endregion
 
 #region Q4
 
-Console.WriteLine("Enter number:");
-int n = int.Parse(Console.ReadLine());
-long sum = Summary.SumNumbersThread(1, n + 1);
-long sumWithThreads = Summary.SumNumbers(n);
-Console.WriteLine("sum =              " + sum);
-Console.WriteLine("sum with threads = " + sumWithThreads);
+//Console.WriteLine("Enter number:");
+//int n = int.Parse(Console.ReadLine());
+//long sum = Summary.SumNumbersThread(1, n + 1);
+//long sumWithThreads = Summary.SumNumbers(n);
+//Console.WriteLine("sum =              " + sum);
+//Console.WriteLine("sum with threads = " + sumWithThreads);
+
+
+
+
+//   Task
+
+
+
+
+//    async - await
+
 
 #endregion
