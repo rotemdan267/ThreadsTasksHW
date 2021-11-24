@@ -8,7 +8,35 @@ namespace ThreadsTasksHW
 {
     internal static class Summary
     {
-        public static long SumNumbersThread(int startNumber, int endNumber)
+        public static List<long> MidSums { get; set; }
+        public static object lockObject;
+        public static object lockObject2;
+        public static int count;
+
+        static Summary()
+        {
+            MidSums = new List<long>();
+            lockObject = new object();
+            lockObject2 = new object();
+            count = -1;
+        }
+        public static void AddToList(long midSum)
+        {
+            lock(lockObject)
+            {
+                MidSums.Add(midSum);
+            }
+        }
+        public static int AddToCount()
+        {
+            lock (lockObject2)
+            {
+                count++;
+            }
+            return count;
+        }
+
+        public static long SumNumbers(int startNumber, int endNumber)
         {
             long sum = 0;
             for (int i = startNumber; i < endNumber; i++)
@@ -18,12 +46,12 @@ namespace ThreadsTasksHW
             return sum;
         }
 
-        public static long SumNumbers(int endNumber)
+
+        public static long SumNumbersWithThreads(int endNumber)
         {
             long sum = endNumber;
             int numForThread = 200000; // כמות המספרים שתהליך יעבוד עליהם
             int numOfThreads = endNumber / 200000;
-            int count = -1;
             if (endNumber % 200000 > 0)
             {
                 numOfThreads++; // תהליך נוסף שיחבר את המספרים הנותרים
@@ -32,19 +60,17 @@ namespace ThreadsTasksHW
             { // השאלה ביקשה שיהיו לפחות 5 תהליכים...
                 numOfThreads = 5;
                 numForThread = endNumber / 5;
-                sum += SumNumbersThread(1, endNumber % 5);
+                sum += SumNumbers(1, endNumber % 5);
             }
             List<Thread> threads = new List<Thread>(); // רשימה של כל התהליכים
-            List<long> midSums = new List<long>(); // רשימה של כל הסכומים שיחזרו מהתהליכים
-            //Task[] tasks = new Task[numOfThreads];
             int[] tempEnd = new int[numOfThreads]; // רשימה של מס' סופי שיישלח לתהליך
-                               // (כששלחתי משתנה לתהליך, הוא הספיק להשתנות לפני שהתהליך החל לפעול,
+                                                   // (כששלחתי משתנה לתהליך, הוא הספיק להשתנות לפני שהתהליך החל לפעול,
                                                    // לכן צריך רשימה שתכיל משתנים שלא ישתנו)
             tempEnd[0] = endNumber;   // מס' סופי הראשון
             int[] tempStart = new int[numOfThreads]; // רשימה של מס' התחלתי לכל תהליך
             tempStart[0] = endNumber; // מס' התחלתי ראשון (ישתנה בתחילת הלולאה)
             Thread thread;
-            Func<int, int, long> sumDel = SumNumbersThread;
+            Func<int, int, long> sumDel = SumNumbers;
             for (int i = 0; i < numOfThreads; i++)
             {
                 if (i != 0)
@@ -55,36 +81,23 @@ namespace ThreadsTasksHW
                 tempStart[i] = tempEnd[i] - numForThread; // חישוב מס' התחלתי לכל תהליך
                 if (tempStart[i] < 0) tempStart[i] = 0;
                 thread = new Thread(() =>
-                { // i-כשהשתמשתי ב
-                  // בתור אינדקס הוא הספיק להשתנות לפני שהתהליך התחיל לפעול ונזרקתי מחוץ
-                  // למערך ו/או התכנית דילגה על חלק מהאיברים
-                  // במערך, לכן היה צריך למצוא דרך לגרום שכל פעם שתהליך
-                  // יפעל, הבא אחריו יעבוד עם האיבר הבא במערך, לכן
-                  // count
-                    long midSum = sumDel(tempStart[++count], tempEnd[count]);
-                    midSums.Add(midSum);
+                { 
+                    int currentCount = AddToCount();
+                    long midSum = sumDel(tempStart[currentCount], tempEnd[currentCount]);
+                    AddToList(midSum);
                 });
                 thread.Name = "thread " + i;
                 threads.Add(thread);
-                //threads[i].Start();
-                //tasks[i] = new Task(() =>
-                //{
-                //    long midSum = sumDel(tempStart[midSums.Count], tempEnd[midSums.Count]);
-                //    midSums.Add(midSum);
-                //});
-                //tasks[i].Start();
-                //thread.Start();
-                //Console.WriteLine(thread.ThreadState);
-                //thread.Join();
-                //Console.WriteLine(thread.ThreadState);
-                //threads.Add(thread);
+                threads[i].Start();
+                //threads[i].Join();
+
                 //Console.WriteLine($"{threads[i].Name} {threads[i].ThreadState}");
 
             }
 
             for (int i = 0; i < numOfThreads; i++)
             {
-                threads[i].Start();
+                //threads[i].Start();
                 //Console.WriteLine($"{threads[i].Name} {threads[i].ThreadState}");
                 threads[i].Join();
                 //Console.WriteLine($"{threads[i].Name} {threads[i].ThreadState}");
@@ -93,10 +106,121 @@ namespace ThreadsTasksHW
 
             for (int i = 0; i < numOfThreads; i++)
             {
-                sum += midSums[i];
+                sum += MidSums[i];
             }
             return sum;
         }
-        
+
+        public static long SumNumbersWithTasks(int endNumber)
+        {
+            long sum = endNumber;
+            int numForThread = 200000; // כמות המספרים שתהליך יעבוד עליהם
+            int numOfThreads = endNumber / 200000;
+            
+            if (endNumber % 200000 > 0)
+            {
+                numOfThreads++; // תהליך נוסף שיחבר את המספרים הנותרים
+            }
+            if (numOfThreads < 5)
+            { // השאלה ביקשה שיהיו לפחות 5 תהליכים...
+                numOfThreads = 5;
+                numForThread = endNumber / 5;
+                sum += SumNumbers(1, endNumber % 5);
+            }
+          
+            Task[] tasks = new Task[numOfThreads];
+            int[] tempEnd = new int[numOfThreads]; // רשימה של מס' סופי שיישלח לתהליך
+                                                   // (כששלחתי משתנה לתהליך, הוא הספיק להשתנות לפני שהתהליך החל לפעול,
+                                                   // לכן צריך רשימה שתכיל משתנים שלא ישתנו)
+            tempEnd[0] = endNumber;   // מס' סופי הראשון
+            int[] tempStart = new int[numOfThreads]; // רשימה של מס' התחלתי לכל תהליך
+            tempStart[0] = endNumber; // מס' התחלתי ראשון (ישתנה בתחילת הלולאה)
+            Task task;
+            Func<int, int, long> sumDel = SumNumbers;
+            for (int i = 0; i < numOfThreads; i++)
+            {
+                if (i != 0)
+                { // חישוב המס' הסופי לכל תהליך. בריצה הראשונה אי אפשר כי אין אינדקס 
+                  // -1
+                    tempEnd[i] = tempEnd[i - 1] - numForThread;
+                }
+                tempStart[i] = tempEnd[i] - numForThread; // חישוב מס' התחלתי לכל תהליך
+                if (tempStart[i] < 0) tempStart[i] = 0;
+                task = new Task(() =>
+                { 
+                    int currentCount = AddToCount();
+                    long midSum = sumDel(tempStart[currentCount], tempEnd[currentCount]);
+                    AddToList(midSum);
+                });
+                tasks[i] = task;
+                tasks[i].Start();
+            }
+
+            Task.WaitAll(tasks);
+
+            for (int i = 0; i < numOfThreads; i++)
+            {
+                sum += MidSums[i];
+            }
+            return sum;
+        }
+
+        public static long SumNumbersWithTasksAsync(int endNumber)
+        {
+            long sum = endNumber;
+            int numForThread = 200000; // כמות המספרים שתהליך יעבוד עליהם
+            int numOfThreads = endNumber / 200000;
+
+            if (endNumber % 200000 > 0)
+            {
+                numOfThreads++; // תהליך נוסף שיחבר את המספרים הנותרים
+            }
+            if (numOfThreads < 5)
+            { // השאלה ביקשה שיהיו לפחות 5 תהליכים...
+                numOfThreads = 5;
+                numForThread = endNumber / 5;
+                sum += SumNumbers(1, endNumber % 5);
+            }
+            Task[] tasks = new Task[numOfThreads];
+            int[] tempEnd = new int[numOfThreads]; // רשימה של מס' סופי שיישלח לתהליך
+                                                   // (כששלחתי משתנה לתהליך, הוא הספיק להשתנות לפני שהתהליך החל לפעול,
+                                                   // לכן צריך רשימה שתכיל משתנים שלא ישתנו)
+            tempEnd[0] = endNumber;   // מס' סופי הראשון
+            int[] tempStart = new int[numOfThreads]; // רשימה של מס' התחלתי לכל תהליך
+            tempStart[0] = endNumber; // מס' התחלתי ראשון (ישתנה בתחילת הלולאה)
+            Task task;
+            Func<int, int, long> sumDel = SumNumbers;
+            for (int i = 0; i < numOfThreads; i++)
+            {
+                if (i != 0)
+                { // חישוב המס' הסופי לכל תהליך. בריצה הראשונה אי אפשר כי אין אינדקס 
+                  // -1
+                    tempEnd[i] = tempEnd[i - 1] - numForThread;
+                }
+                tempStart[i] = tempEnd[i] - numForThread; // חישוב מס' התחלתי לכל תהליך
+                if (tempStart[i] < 0) tempStart[i] = 0;
+                task = SumNumbersAsync(sumDel, tempStart, tempEnd);
+                tasks[i] = task;
+            }
+
+            Task.WaitAll(tasks);
+
+            for (int i = 0; i < numOfThreads; i++)
+            {
+                sum += MidSums[i];
+            }
+            return sum;
+        }
+
+        public static async Task SumNumbersAsync(Func<int, int, long> sumDel, int[] tempStart, int[] tempEnd)
+        {
+            await Task.Run(() =>
+            {
+                int currentCount = AddToCount();
+                long midSum = sumDel(tempStart[currentCount], tempEnd[currentCount]);
+                AddToList(midSum);
+            });
+        }
+
     }
 }

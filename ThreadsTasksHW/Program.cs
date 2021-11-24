@@ -370,22 +370,34 @@ Q3Task4 = new Task(() =>
 
 #region Q4
 
-//Console.WriteLine("Enter number:");
-//int n = int.Parse(Console.ReadLine());
-//long sum = Summary.SumNumbersThread(1, n + 1);
-//long sumWithThreads = Summary.SumNumbers(n);
-//Console.WriteLine("sum =              " + sum);
+Console.WriteLine("Enter number:");
+int n = 0;
+bool flag;
+flag = int.TryParse(Console.ReadLine(), out n);
+while (!flag)
+{
+    Console.WriteLine("Wrong input. enter number:");
+    flag = int.TryParse(Console.ReadLine(), out n);
+}
+long sum = Summary.SumNumbers(1, n + 1);
+Console.WriteLine("sum =              " + sum);
+
+
+// הערה חשובה לבודק: בניתי בשלושת השיטות, כמו שהתבקשנו
+// Thread, Task, Async-await
+// אבל הפונקציות לא עובדות ביחד, כי הן משתמשות
+// Summary באותם משתנים במחלקת 
+// יכולתי לכתוב את המשתנים 3 פעמים שונות אבל זה נראה לי מאמץ מיותר
+// ולא מה שהתבקשנו בתרגיל, אז לא להפעיל את הפונקציות יחד - כל אחת בנפרד
+
+
+
+//long sumWithThreads = Summary.SumNumbersWithThreads(n);
+//long sumWithTasks = Summary.SumNumbersWithTasks(n);
+long sumAsync = Summary.SumNumbersWithTasksAsync(n);
 //Console.WriteLine("sum with threads = " + sumWithThreads);
-
-
-
-
-//   Task
-
-
-
-
-//    async - await
+//Console.WriteLine("sum with tasks =   " + sumWithTasks);
+Console.WriteLine("sum with async =   " + sumAsync);
 
 
 #endregion
