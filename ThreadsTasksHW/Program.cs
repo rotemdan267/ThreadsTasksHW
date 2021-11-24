@@ -393,11 +393,12 @@ Console.WriteLine("sum =              " + sum);
 
 
 //long sumWithThreads = Summary.SumNumbersWithThreads(n);
-//long sumWithTasks = Summary.SumNumbersWithTasks(n);
-long sumAsync = Summary.SumNumbersWithTasksAsync(n);
+long sumWithTasks = Summary.SumNumbersWithTasks(n);
+//long sumAsync = Summary.SumNumbersWithTasksAsync(n);
+
 //Console.WriteLine("sum with threads = " + sumWithThreads);
-//Console.WriteLine("sum with tasks =   " + sumWithTasks);
-Console.WriteLine("sum with async =   " + sumAsync);
+Console.WriteLine("sum with tasks =   " + sumWithTasks);
+//Console.WriteLine("sum with async =   " + sumAsync);
 
 
 #endregion

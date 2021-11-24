@@ -70,7 +70,6 @@ namespace ThreadsTasksHW
             int[] tempStart = new int[numOfThreads]; // רשימה של מס' התחלתי לכל תהליך
             tempStart[0] = endNumber; // מס' התחלתי ראשון (ישתנה בתחילת הלולאה)
             Thread thread;
-            Func<int, int, long> sumDel = SumNumbers;
             for (int i = 0; i < numOfThreads; i++)
             {
                 if (i != 0)
@@ -82,8 +81,8 @@ namespace ThreadsTasksHW
                 if (tempStart[i] < 0) tempStart[i] = 0;
                 thread = new Thread(() =>
                 { 
-                    int currentCount = AddToCount();
-                    long midSum = sumDel(tempStart[currentCount], tempEnd[currentCount]);
+                    int currentIndex = AddToCount();
+                    long midSum = SumNumbers(tempStart[currentIndex], tempEnd[currentIndex]);
                     AddToList(midSum);
                 });
                 thread.Name = "thread " + i;
@@ -136,7 +135,6 @@ namespace ThreadsTasksHW
             int[] tempStart = new int[numOfThreads]; // רשימה של מס' התחלתי לכל תהליך
             tempStart[0] = endNumber; // מס' התחלתי ראשון (ישתנה בתחילת הלולאה)
             Task task;
-            Func<int, int, long> sumDel = SumNumbers;
             for (int i = 0; i < numOfThreads; i++)
             {
                 if (i != 0)
@@ -148,8 +146,8 @@ namespace ThreadsTasksHW
                 if (tempStart[i] < 0) tempStart[i] = 0;
                 task = new Task(() =>
                 { 
-                    int currentCount = AddToCount();
-                    long midSum = sumDel(tempStart[currentCount], tempEnd[currentCount]);
+                    int currentIndex = AddToCount();
+                    long midSum = SumNumbers(tempStart[currentIndex], tempEnd[currentIndex]);
                     AddToList(midSum);
                 });
                 tasks[i] = task;
@@ -189,7 +187,6 @@ namespace ThreadsTasksHW
             int[] tempStart = new int[numOfThreads]; // רשימה של מס' התחלתי לכל תהליך
             tempStart[0] = endNumber; // מס' התחלתי ראשון (ישתנה בתחילת הלולאה)
             Task task;
-            Func<int, int, long> sumDel = SumNumbers;
             for (int i = 0; i < numOfThreads; i++)
             {
                 if (i != 0)
@@ -199,7 +196,7 @@ namespace ThreadsTasksHW
                 }
                 tempStart[i] = tempEnd[i] - numForThread; // חישוב מס' התחלתי לכל תהליך
                 if (tempStart[i] < 0) tempStart[i] = 0;
-                task = SumNumbersAsync(sumDel, tempStart, tempEnd);
+                task = SumNumbersAsync(tempStart, tempEnd);
                 tasks[i] = task;
             }
 
@@ -212,12 +209,12 @@ namespace ThreadsTasksHW
             return sum;
         }
 
-        public static async Task SumNumbersAsync(Func<int, int, long> sumDel, int[] tempStart, int[] tempEnd)
+        public static async Task SumNumbersAsync(int[] tempStart, int[] tempEnd)
         {
             await Task.Run(() =>
             {
-                int currentCount = AddToCount();
-                long midSum = sumDel(tempStart[currentCount], tempEnd[currentCount]);
+                int currentIndex = AddToCount();
+                long midSum = SumNumbers(tempStart[currentIndex], tempEnd[currentIndex]);
                 AddToList(midSum);
             });
         }
