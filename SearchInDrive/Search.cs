@@ -218,18 +218,19 @@ namespace SearchInDrive
                     if (file.Extension == extension)
                     {
                         FilesToRead.Add(file);
-                        Task task = ReadFileAsync();
-                        task.Wait();
+                        //Task task = 
+                            ReadFileAsync();
+                        //task.Wait();
                     }
                 }
             }
         }
-        public async Task ReadFileAsync()
+        public void ReadFileAsync()
         {
             //try
             //{
-            await Task.Run(() =>
-            {
+            //await Task.Run(() =>
+            //{
                 int fileIndex = GetIndex();
                 StreamReader streamReader = new StreamReader(FilesToRead[fileIndex].FullName);
                 string str = streamReader.ReadToEnd();
@@ -248,7 +249,7 @@ namespace SearchInDrive
                         else str = string.Empty;
                     }
                 }
-            });
+            //});
             //}
             //catch (UnauthorizedAccessException ex)
             //{

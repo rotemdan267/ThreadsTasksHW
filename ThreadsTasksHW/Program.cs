@@ -370,17 +370,17 @@ Q3Task4 = new Task(() =>
 
 #region Q4
 
-Console.WriteLine("Enter number:");
-int n = 0;
-bool flag;
-flag = int.TryParse(Console.ReadLine(), out n);
-while (!flag)
-{
-    Console.WriteLine("Wrong input. enter number:");
-    flag = int.TryParse(Console.ReadLine(), out n);
-}
-long sum = Summary.SumNumbers(1, n + 1);
-Console.WriteLine("sum =              " + sum);
+//Console.WriteLine("Enter number:");
+//int n = 0;
+//bool flag;
+//flag = int.TryParse(Console.ReadLine(), out n);
+//while (!flag)
+//{
+//    Console.WriteLine("Wrong input. enter number:");
+//    flag = int.TryParse(Console.ReadLine(), out n);
+//}
+//long sum = Summary.SumNumbers(1, n + 1);
+//Console.WriteLine("sum =              " + sum);
 
 
 // הערה חשובה לבודק: בניתי בשלושת השיטות, כמו שהתבקשנו
@@ -392,13 +392,26 @@ Console.WriteLine("sum =              " + sum);
 
 
 
-long sumWithThreads = Summary.SumNumbersWithThreads(n);
+//long sumWithThreads = Summary.SumNumbersWithThreads(n);
 //long sumWithTasks = Summary.SumNumbersWithTasks(n);
 //long sumAsync = Summary.SumNumbersWithTasksAsync(n);
 
-Console.WriteLine("sum with threads = " + sumWithThreads);
+//Console.WriteLine("sum with threads = " + sumWithThreads);
 //Console.WriteLine("sum with tasks =   " + sumWithTasks);
 //Console.WriteLine("sum with async =   " + sumAsync);
 
 
 #endregion
+
+
+int[] arr = new int[1000];
+for (int i = 0; i < arr.Length; i++)
+    arr[i] = i;
+int sum1 = 0;
+for (int i = 0; i < arr.Length; i++)
+{
+    sum1 += arr[i];
+}
+Console.WriteLine(sum1);
+int sum2 = Example.SumArrayWithThreads(arr);
+Console.WriteLine(sum2);
