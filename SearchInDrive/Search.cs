@@ -82,6 +82,8 @@ namespace SearchInDrive
         {
             Extensions.Add(extension);
         }
+
+        //------------------------------------------------------------------------------------------------------------------
         public void StartSearchWithTasks()
         {
             DirectoryInfo drive = new DirectoryInfo(Drive);
@@ -160,13 +162,15 @@ namespace SearchInDrive
             }
         }
 
+        //--------------------------------------------------------------------------------------------------
 
         public async void StartSearchAsync()
         {
             DirectoryInfo drive = new DirectoryInfo(Drive);
             var directories = drive.GetDirectories();
             var files = drive.GetFiles();
-            await SearchInDirectoriesAsync(directories);
+            Task task = SearchInDirectoriesAsync(directories);
+            AddTask(task);
             SearchInDirectoryAsync(files);
         }
         public async Task SearchInDirectoriesAsync(DirectoryInfo[] directories)
@@ -248,7 +252,7 @@ namespace SearchInDrive
             }
         }
 
-
+        //----------------------------------------------------------------------------------------------------
 
         public void StartSearch()
         {
