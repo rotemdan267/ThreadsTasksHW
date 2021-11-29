@@ -29,17 +29,56 @@ namespace ThreadsTasksHW
         }
         public static int SumArrayWithThreads(int[] arr)
         {
-            for (int i = 0; i < arr.Length; i++)
+            Thread thread1 = new Thread(() =>
             {
-                Thread thread = new Thread(() =>
+                for (int i = 0; i < 200; i++)
                 {
                     AddToSum(arr[IndexPlusOne()]);
-                });
-                thread.Start();
-                thread.Join();
-            }
+                }
+            });
+            Thread thread2 = new Thread(() =>
+            {
+                for (int i = 200; i < 400; i++)
+                {
+                    AddToSum(arr[IndexPlusOne()]);
+                }
+            });
+            Thread thread3 = new Thread(() =>
+            {
+                for (int i = 400; i < 600; i++)
+                {
+                    AddToSum(arr[IndexPlusOne()]);
+                }
+            });
+            Thread thread4 = new Thread(() =>
+            {
+                for (int i = 600; i < 800; i++)
+                {
+                    AddToSum(arr[IndexPlusOne()]);
+                }
+            });
+            Thread thread5 = new Thread(() =>
+            {
+                for (int i = 800; i < 1000; i++)
+                {
+                    AddToSum(arr[IndexPlusOne()]);
+                }
+            });
+            thread1.Start();
+            thread2.Start();
+            thread3.Start();
+            thread4.Start();
+            thread5.Start();
+
+            thread1.Join();
+            thread2.Join();
+            thread3.Join();
+            thread4.Join();
+            thread5.Join();
 
             return sum;
+
+
         }
     }
 }
